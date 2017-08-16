@@ -12,6 +12,22 @@ import java.util.List;
         this.chatId = chatId;
     }
 
+     public Long getChatId() {
+         return chatId;
+     }
+
+     public String getStatus() {
+         return status;
+     }
+
+     public List<Long> getMessagesId() {
+         return messagesId;
+     }
+
+     public String getData() {
+         return data;
+     }
+
      public void setStatus(String status) {
          this.status = status;
      }

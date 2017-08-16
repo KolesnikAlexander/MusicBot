@@ -27,6 +27,20 @@ public class Messages {
         }
     }
 
+    public static void sendMarkupMessage(TelegramLongPollingBot bot,
+                                         Update update,
+                                         String text,InlineKeyboardMarkup markup) {
+        SendMessage reply = new SendMessage() // Create a message object object
+                .setChatId(update.getMessage().getChatId())
+                .setText(text)
+                .setReplyMarkup(markup);
+        try {
+            bot.sendMessage(reply); // Sending our message object to user
+        } catch (TelegramApiException e) {
+            System.out.println("Failed to send message");
+        }
+    }
+
     public static void editMessage(TelegramLongPollingBot bot, Update update, String text, InlineKeyboardMarkup markup) {
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
         long chatId = update.getCallbackQuery().getMessage().getChatId();

@@ -42,16 +42,15 @@ public class Logger {
         try {
             File f = new File(Settings.LOG_PATH);
             if (!f.exists()) {
-
                 PrintWriter out = new PrintWriter(Settings.LOG_PATH, "UTF-8");
                 out.close();
             }
             log("Server Started");
 
         } catch (FileNotFoundException e) {
-
+            //nop
         } catch (UnsupportedEncodingException e) {
-
+            //nop
         }
     }
 }

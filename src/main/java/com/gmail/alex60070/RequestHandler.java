@@ -19,20 +19,6 @@ import static com.gmail.alex60070.session.SessionManager.createSesion;
  */
 public class RequestHandler {
 
-
-    public static void exampleHandler(Bot bot, Message message) {
-        InputStream in = new RequestHandler().getClass().getResourceAsStream("/res/example.asm");
-        SendDocument document = new SendDocument();
-        document.setNewDocument("example.asm", in)
-                .setCaption("Пример .asm файла")
-                .setChatId(message.getChatId());
-        try {
-            bot.sendDocument(document);
-        } catch (TelegramApiException e) {
-            System.out.println("Cannot send example document");
-        }
-    }
-
     public static void startHandler(Bot bot, Message message) {
        // Logger.userLog(message, "start request");
         String text = "Меню";
@@ -53,14 +39,16 @@ public class RequestHandler {
     public static void addSongHandler(Bot bot, Update update) {
         String text = "Добавить песню\n" +
                 "Введите название песни:";
-        Session session = SessionManager.createSesion(update.getMessage().getChatId());
+        Session session = SessionManager.createSesion(update.getCallbackQuery()//!!!!
+                .getMessage()
+                .getChatId());
         session.setStatus("input_song_name");
 
         Messages.editMessage(bot, update, text, Keyboards.backKeyKeyboard("options"));
-        try {
-            bot.deleteMessage(new DeleteMessage().setMessageId(123));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            bot.deleteMessage(new DeleteMessage().setMessageId(123));
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
     }
 }

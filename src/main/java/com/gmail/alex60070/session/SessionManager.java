@@ -19,14 +19,14 @@ public class SessionManager {
      * Returns session if it exists and null otherwise.
      * @return
      */
-    public static Session getSessionByChatId(Long chatId){
+    public static Session getSession(Long chatId){
         for (Session session : sessions) {
-            if (session.chatId == chatId)
+            if (session.chatId.equals(chatId))
                 return session;
         }
         return null;
     }
     public static boolean sessionExists(Long chatId){
-        return getSessionByChatId(chatId) != null;
+        return getSession(chatId) != null;
     }
 }

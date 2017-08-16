@@ -1,5 +1,7 @@
 package com.gmail.alex60070;
 
+import com.gmail.alex60070.request.AddSongRequest;
+import com.gmail.alex60070.session.Session;
 import com.gmail.alex60070.session.SessionManager;
 import com.gmail.alex60070.util.Logger;
 import com.gmail.alex60070.util.document.Documents;
@@ -20,21 +22,43 @@ import java.util.regex.Pattern;
 public class Bot extends TelegramLongPollingBot{
     public void onUpdateReceived(Update update)
     {
-        if (sessionExists(update.getMessage().getChatId()))
+        try {
+            if(update.hasCallbackQuery()){
+                processCallback(update);
+            }
 
-        if(update.hasCallbackQuery())
-            processCallback(update);
+            else if (update.hasMessage())
+                processMessage(update);
+        }
+        catch (Exception e){
+            System.out.println("Problem");
+            Logger.log(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
 
-        else if (update.hasMessage())
-            processMessage(update);
     }
 
-    private boolean sessionExists(Long chatId) {
-        return SessionManager.sessionExists(chatId);
+    private void processSession(Update update, Session session) throws Exception {
+        String status = session.getStatus();
+
+        if (status == null){
+            // TODO: 16.08.17 Create own exception
+            throw new Exception("Status is null");
+        }
+        else if (status.equals("input_song_name")){
+            AddSongRequest.addSongHandler(this, update);
+        }
     }
 
-    private void processMessage(Update update) {
+    private void processMessage(Update update) throws Exception {
         Message message = update.getMessage();
+
+        if (SessionManager.sessionExists(message.getChatId())){
+            Session session = SessionManager.getSession(message.getChatId());
+            processSession(update, session);
+            return;
+        }
 
         if(isRequest(message, "/start"))
             RequestHandler.startHandler(this, message);
@@ -68,6 +92,7 @@ public class Bot extends TelegramLongPollingBot{
 
 
     private String filterCallback(String callbackData) throws Exception {
+        System.out.println("Matcher check");//<-------------------------
             //Pattern to validate
             Pattern usrIdPattern = Pattern.compile("^(.+)\\(.+\\)$",
                     Pattern.CASE_INSENSITIVE);
