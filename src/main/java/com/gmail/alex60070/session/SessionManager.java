@@ -29,4 +29,7 @@ public class SessionManager {
     public static boolean sessionExists(Long chatId){
         return getSession(chatId) != null;
     }
+    static void destroySession(Session session){
+        sessions.remove(session);
+    }
 }

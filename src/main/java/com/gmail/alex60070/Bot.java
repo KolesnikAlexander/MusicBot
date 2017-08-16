@@ -1,17 +1,12 @@
 package com.gmail.alex60070;
 
-import com.gmail.alex60070.request.AddSongRequest;
+import com.gmail.alex60070.request.AddSongSession;
 import com.gmail.alex60070.session.Session;
 import com.gmail.alex60070.session.SessionManager;
 import com.gmail.alex60070.util.Logger;
-import com.gmail.alex60070.util.document.Documents;
-import com.gmail.alex60070.util.message.Messages;
-import org.telegram.telegrambots.api.objects.Document;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-
-import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +26,6 @@ public class Bot extends TelegramLongPollingBot{
                 processMessage(update);
         }
         catch (Exception e){
-            System.out.println("Problem");
             Logger.log(e.getMessage());
             e.printStackTrace();
             return;
@@ -40,14 +34,14 @@ public class Bot extends TelegramLongPollingBot{
     }
 
     private void processSession(Update update, Session session) throws Exception {
-        String status = session.getStatus();
+        String request = session.getRequest();
 
-        if (status == null){
+        if (request == null){
             // TODO: 16.08.17 Create own exception
-            throw new Exception("Status is null");
+            throw new Exception("Session request is null");
         }
-        else if (status.equals("input_song_name")){
-            AddSongRequest.addSongHandler(this, update);
+        else if (request.equals("add_song")){
+            AddSongSession.nameIsSent(this, update, session);
         }
     }
 
@@ -57,17 +51,13 @@ public class Bot extends TelegramLongPollingBot{
         if (SessionManager.sessionExists(message.getChatId())){
             Session session = SessionManager.getSession(message.getChatId());
             processSession(update, session);
-            return;
         }
 
-        if(isRequest(message, "/start"))
-            RequestHandler.startHandler(this, message);
-
-        else if (message.hasDocument())
-            processDocument(message);
+        else if(isRequest(message, "/start"))
+            RequestHandler.start(this, update);
 
         else
-            processUnknown(message);
+            processUnknown(update);
         return;
     }
 
@@ -81,18 +71,17 @@ public class Bot extends TelegramLongPollingBot{
             return;
         }
         if (filteredData.equals("list"))
-            RequestHandler.listHandler(this, update);
+            RequestHandler.list(this, update);
         else if (filteredData.equals("options"))
-            RequestHandler.optionsHandler(this, update);
+            RequestHandler.options(this, update);
         else if (filteredData.equals("menu"))
-            RequestHandler.menuBackHandler(this, update);
+            RequestHandler.menuBack(this, update);
         else if (filteredData.equals("add_song"))
-            RequestHandler.addSongHandler(this, update);
+            AddSongSession.addSongClick(this, update);
     }
 
 
     private String filterCallback(String callbackData) throws Exception {
-        System.out.println("Matcher check");//<-------------------------
             //Pattern to validate
             Pattern usrIdPattern = Pattern.compile("^(.+)\\(.+\\)$",
                     Pattern.CASE_INSENSITIVE);
@@ -112,22 +101,9 @@ public class Bot extends TelegramLongPollingBot{
             return false;
     }
 
-    private void processUnknown(Message message) {
+    private void processUnknown(Update update) {
         //same as /start
-        RequestHandler.startHandler(this, message);
-    }
-
-    private void processDocument(Message message) {
-        Document document = message.getDocument();
-        Logger.userLog(message, "sent document \""
-                +document.getFileName()+"\"");
-        if (!document.getFileName().endsWith(".asm"))
-            Messages.sendMessage(this, message, "Отправьте файл с расширением .asm");
-        else{
-            InputStream asmFileStream = Documents.downloadDocument(this, document); ///<------------------
-            InputStream listing = getListing(asmFileStream); //<--------
-            Documents.sendDocument(this, message, genDocName(document.getFileName()), listing);
-        }
+        RequestHandler.start(this, update);
     }
 
     private String genDocName(String fileName) {
@@ -142,14 +118,4 @@ public class Bot extends TelegramLongPollingBot{
         return Settings.TOKEN;
     }
 
-    public InputStream getListing(InputStream asmFileStream) {
-        InputStream result = null;
-        ListingDownloader listingDownloader = new ListingDownloader();
-        try {
-            result = listingDownloader.listing(org.apache.commons.io.IOUtils.toByteArray(asmFileStream));
-        } catch (IOException e) {
-            System.out.println("Cannot make byte array");
-        }
-        return result;
-    }
 }

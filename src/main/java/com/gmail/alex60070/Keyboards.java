@@ -66,4 +66,23 @@ public class Keyboards {
         menuBackKeyKeyboard.setKeyboard(rowsInline);
         return menuBackKeyKeyboard;
     }
+    public static InlineKeyboardMarkup cancelKeyboard() {
+        InlineKeyboardMarkup menuBackKeyKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+        String data = putCallbackDataSuffix("add_song");
+        rowInline.add(new InlineKeyboardButton()
+                .setText("\t\t\t\t\tДобавить песню\t\t\t\t\t")
+                .setCallbackData(data));
+
+        data = putCallbackDataSuffix("menu");
+        rowInline.add(new InlineKeyboardButton()
+                .setText("\t\t\t\t\t<< Назад\t\t\t\t\t")
+                .setCallbackData(data));
+
+        rowsInline.add(rowInline);
+        menuBackKeyKeyboard.setKeyboard(rowsInline);
+        return menuBackKeyKeyboard;
+    }
 }
