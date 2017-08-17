@@ -1,18 +1,10 @@
 package com.gmail.alex60070;
 
-import com.gmail.alex60070.request.AddSongDialog;
-import com.gmail.alex60070.request.HelloSlashRequest;
-import com.gmail.alex60070.util.request.RequestManager;
-import com.gmail.alex60070.util.dialog.Dialog;
-import com.gmail.alex60070.util.dialog.DialogManager;
+import com.gmail.alex60070.request.UnknownRequest;
 import com.gmail.alex60070.util.Logger;
-import com.gmail.alex60070.util.message.Messages;
-import com.gmail.alex60070.util.request.Request;
-import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 
 /**
@@ -22,99 +14,21 @@ public class Bot extends TelegramLongPollingBot{
     public void onUpdateReceived(Update update)
     {
         try {
-            Request request = RequestManager.getRequest(update);
-            if (request != null){
-                request.handle(this, update);
+            if(Main.commandsRequestManager.processRequest(this, update))
                 return;
-            }
-            Message message = Messages.retrieveMessage(update);
+            else if(Main.dialogManager.processDialog(this, update))
+                return;
+            else if(Main.requestManager.processRequest(this, update))
+                return;
 
-            if (DialogManager.dialogExists(message.getChatId())){
-                Dialog dialog = DialogManager.getDialog(message.getChatId());
-                dialog.join(this, update);
-            }
-
-            else if(update.hasCallbackQuery()){
-                processCallback(update);
-            }
-
-            else if (update.hasMessage())
-                processMessage(update);
+            new UnknownRequest().handle(this, update);
         }
         catch (Exception e){
             Logger.log(e.getMessage());
             e.printStackTrace();
             return;
         }
-
     }
-
-    private void processMessage(Update update) throws Exception {
-        Message message = update.getMessage();
-
-        if(isRequest(message, "/start"))
-            RequestHandler.start(this, update);
-
-        else
-            processUnknown(update);
-        return;
-    }
-
-    private void processCallback(Update update){
-        String filteredData;
-        try {
-            String callbackData = update.getCallbackQuery().getData();
-            filteredData = filterCallback(callbackData);
-        } catch (Exception e) {
-            Logger.log(e.getMessage());
-            return;
-        }
-        if (filteredData.equals("list"))
-            RequestHandler.list(this, update);
-        else if (filteredData.equals("options"))
-            RequestHandler.options(this, update);
-        else if (filteredData.equals("menu"))
-            RequestHandler.menuBack(this, update);
-        else if (filteredData.equals("add_song"))
-        {
-            Dialog dialog = new AddSongDialog(Messages.retrieveMessage(update).getChatId());
-            dialog.start(this, update);
-        }
-//        DialogManager.startDialogByRequest(filteredData);
-//
-//            Request request = RequestManager.getRequest(update);
-//            if (request != null)
-//                request.handle(update);
-//
-//        RequestManager.handleReqest()
-    }
-
-
-    private String filterCallback(String callbackData) throws Exception {
-            //Pattern to validate
-            Pattern usrIdPattern = Pattern.compile("^(.+)\\(.+\\)$",
-                    Pattern.CASE_INSENSITIVE);
-            Matcher matcher = usrIdPattern.matcher(callbackData);
-            if(matcher.find()) {
-                return matcher.group(1);
-            }
-            else
-                // TODO: 16.08.17 Create own exception
-                throw new Exception("Unknown callback data format: "+callbackData);
-    }
-
-    private boolean isRequest(Message message, String request){
-        if(message.hasText() && message.getText().equals(request))
-            return true;
-        else
-            return false;
-    }
-
-    private void processUnknown(Update update) {
-        //same as /start
-        RequestHandler.start(this, update);
-    }
-
     private String genDocName(String fileName) {
         return fileName.substring(0, fileName.length() - 4) + ".lst";
     }

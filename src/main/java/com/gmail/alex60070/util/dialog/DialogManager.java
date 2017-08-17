@@ -1,6 +1,9 @@
 package com.gmail.alex60070.util.dialog;
 
-import com.gmail.alex60070.util.dialog.Dialog;
+import com.gmail.alex60070.Bot;
+import com.gmail.alex60070.util.message.Messages;
+import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.api.objects.Update;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,27 +12,39 @@ import java.util.List;
  * Created by alex60070 on 17.08.17.
  */
 public class DialogManager {
-        private static List<Dialog> dialogs = new LinkedList<>();
+        private  List<AbstractDialog> abstractDialogs = new LinkedList<>();
 
-        public static void add(Dialog dialog){
-            dialogs.add(dialog);
+        public  void add(AbstractDialog abstractDialog){
+            abstractDialogs.add(abstractDialog);
         }
 
         /**
          * Returns session if it exists and null otherwise.
          * @return
          */
-        public static Dialog getDialog(Long chatId){
-            for (Dialog dialog : dialogs) {
-                if (dialog.getChatId().equals(chatId))
-                    return dialog;
+        public AbstractDialog getDialog(Long chatId){
+            for (AbstractDialog abstractDialog : abstractDialogs) {
+                if (abstractDialog.getChatId().equals(chatId))
+                    return abstractDialog;
             }
             return null;
         }
-        public static boolean dialogExists(Long chatId){
+        public boolean processDialog(Bot bot, Update update){
+
+            Message message = Messages.retrieveMessage(update);
+
+            if (this.dialogExists(message.getChatId())) {
+                AbstractDialog abstractDialog = this.getDialog(message.getChatId());
+                abstractDialog.join(bot, update);
+                return true;
+            }
+            else
+                return false;
+        }
+        public  boolean dialogExists(Long chatId){
             return getDialog(chatId) != null;
         }
-        static void deleteDialog(Dialog dialog){
-            dialogs.remove(dialog);
+         void deleteDialog(AbstractDialog abstractDialog){
+            abstractDialogs.remove(abstractDialog);
         }
 }

@@ -1,7 +1,9 @@
 package com.gmail.alex60070.util.message;
 
+import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.util.Logger;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
@@ -75,4 +77,12 @@ public class Messages {
         else
             return update.getMessage();
     }
+    public static void deleteMessage(Bot bot, int messageId) {
+        try {
+            bot.deleteMessage(new DeleteMessage().setMessageId(messageId));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

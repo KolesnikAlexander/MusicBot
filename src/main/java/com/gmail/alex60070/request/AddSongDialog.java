@@ -2,8 +2,8 @@ package com.gmail.alex60070.request;
 
 import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.Keyboards;
-
-import com.gmail.alex60070.util.dialog.Dialog;
+import com.gmail.alex60070.util.dialog.AbstractDialog;
+import com.gmail.alex60070.util.dialog.DialogManager;
 import com.gmail.alex60070.util.message.Messages;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -11,9 +11,10 @@ import org.telegram.telegrambots.api.objects.Update;
 /**
  * Created by alex60070 on 17.08.17.
  */
-public class AddSongDialog extends Dialog {
-    public AddSongDialog(Long chatId) {
-        super(chatId);
+public class AddSongDialog extends AbstractDialog {
+
+    public AddSongDialog(Long chatId, DialogManager manager) {
+        super(chatId, manager);
     }
 
     @Override
@@ -34,11 +35,6 @@ public class AddSongDialog extends Dialog {
         String text = "Добавить песню\n" +
                 "Введите название песни:";
         Messages.editCurrentMessage(bot, update, text, null);
-//        try {
-//            bot.deleteMessage(new DeleteMessage().setMessageId(123));
-//        } catch (TelegramApiException e) {
-//            e.printStackTrace();
-//        }
     }
     //Message initiated
     public static void inputSongName(Bot bot, Update update) {

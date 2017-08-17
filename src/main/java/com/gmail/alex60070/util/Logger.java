@@ -34,7 +34,7 @@ public class Logger {
         User user = message.getFrom();
         log(user.getFirstName() + " "
                 + user.getLastName()+ " "
-                + "(usrName: "+user.getUserName()+")" + "\n\t\t\t\t Action: "+ action);
+                + "(usrName: "+user.getUserName()+")" + "\n\t\t\t\t AbstractAction: "+ action);
     }
 
 

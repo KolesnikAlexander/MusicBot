@@ -7,13 +7,13 @@ import org.telegram.telegrambots.api.objects.Update;
 /**
  * Created by alex60070 on 17.08.17.
  */
-public abstract class SlashRequest extends Request{
+public abstract class SlashRequestAbs extends RequestAbs {
     @Override
-    protected final boolean validRequest(Update update) {
+    protected final boolean validateRequest(Update update) {
         Message message = update.getMessage();
         if ((message != null) && message.hasText()){
             String text = message.getText();
-            if (text.startsWith("/") && text.equals(getRequest()))
+            if (text.startsWith("/") && text.equals(getRequestString()))
                     return true;
             else
                 return false;
@@ -21,12 +21,7 @@ public abstract class SlashRequest extends Request{
         else
             return false;
     }
-
-    @Override
-    protected RequestType getRequestType() {
-        return RequestType.SLASH;
-    }
-    protected abstract String getRequest();
+    protected abstract String getRequestString();
 
     @Override
     public abstract void  handleRequest(Bot bot, Update update);

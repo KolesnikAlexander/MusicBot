@@ -8,11 +8,11 @@ import java.lang.reflect.Type;
 /**
  * Created by alex60070 on 17.08.17.
  */
-public abstract class Action {
+public abstract class AbstractAction {
     private Class validData;
     private String errorMessage;
 
-    public Action() {
+    public AbstractAction() {
     }
 
     public final void handle(Update update){

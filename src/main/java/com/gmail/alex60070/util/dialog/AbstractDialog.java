@@ -11,15 +11,16 @@ import java.util.List;
 /**
  * Created by alex60070 on 17.08.17.
  */
-public abstract class Dialog {
+public abstract class AbstractDialog {
     private Long chatId;
     private String action; //action that is awaited
     private List<Integer> messagesId; // messages in dialog to ve deleted sequentially
 
-    public Dialog(Long chatId) {
+    public AbstractDialog(Long chatId, DialogManager manager) {
         this.chatId = chatId;
         this.action = "start";
         messagesId = new LinkedList<>();
+        manager.add(this);
     }
 
     public final Long getChatId() {
@@ -40,17 +41,16 @@ public abstract class Dialog {
 
     public final void start(Bot bot, Update update){
         if (action.equals("start")){
-            DialogManager.add(this);
             startDialog(bot, update);
         }
 
         else
             // TODO: 17.08.17 Create own exception
-            throw new RuntimeException("Dialog is already started");
+            throw new RuntimeException("AbstractDialog is already started");
     }
     protected abstract void startDialog(Bot bot, Update update);
 
-    public final void join(Bot bot,Update update){
+    public final void join(Bot bot, Update update){
         Message message = Messages.retrieveMessage(update);
         messagesId.add(message.getMessageId());
         joinDialog(bot, update); // handles certain dialog
@@ -63,9 +63,9 @@ public abstract class Dialog {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Dialog dialog = (Dialog) o;
+        AbstractDialog abstractDialog = (AbstractDialog) o;
 
-        return chatId.equals(dialog.chatId);
+        return chatId.equals(abstractDialog.chatId);
     }
 
     @Override
