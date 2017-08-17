@@ -1,4 +1,4 @@
-package com.gmail.alex60070.request;
+package com.gmail.alex60070.util.dialog;
 
 import com.gmail.alex60070.util.Logger;
 import org.telegram.telegrambots.api.objects.Update;

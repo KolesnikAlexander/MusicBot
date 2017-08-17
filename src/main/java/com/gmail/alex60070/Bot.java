@@ -1,10 +1,13 @@
 package com.gmail.alex60070;
 
 import com.gmail.alex60070.request.AddSongDialog;
-import com.gmail.alex60070.request.Dialog;
-import com.gmail.alex60070.request.DialogManager;
+import com.gmail.alex60070.request.HelloSlashRequest;
+import com.gmail.alex60070.util.request.RequestManager;
+import com.gmail.alex60070.util.dialog.Dialog;
+import com.gmail.alex60070.util.dialog.DialogManager;
 import com.gmail.alex60070.util.Logger;
 import com.gmail.alex60070.util.message.Messages;
+import com.gmail.alex60070.util.request.Request;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -19,7 +22,19 @@ public class Bot extends TelegramLongPollingBot{
     public void onUpdateReceived(Update update)
     {
         try {
-            if(update.hasCallbackQuery()){
+            Request request = RequestManager.getRequest(update);
+            if (request != null){
+                request.handle(this, update);
+                return;
+            }
+            Message message = Messages.retrieveMessage(update);
+
+            if (DialogManager.dialogExists(message.getChatId())){
+                Dialog dialog = DialogManager.getDialog(message.getChatId());
+                dialog.join(this, update);
+            }
+
+            else if(update.hasCallbackQuery()){
                 processCallback(update);
             }
 
@@ -37,12 +52,7 @@ public class Bot extends TelegramLongPollingBot{
     private void processMessage(Update update) throws Exception {
         Message message = update.getMessage();
 
-        if (DialogManager.dialogExists(message.getChatId())){
-            Dialog dialog = DialogManager.getDialog(message.getChatId());
-            dialog.join(this, update);
-        }
-
-        else if(isRequest(message, "/start"))
+        if(isRequest(message, "/start"))
             RequestHandler.start(this, update);
 
         else
@@ -70,6 +80,13 @@ public class Bot extends TelegramLongPollingBot{
             Dialog dialog = new AddSongDialog(Messages.retrieveMessage(update).getChatId());
             dialog.start(this, update);
         }
+//        DialogManager.startDialogByRequest(filteredData);
+//
+//            Request request = RequestManager.getRequest(update);
+//            if (request != null)
+//                request.handle(update);
+//
+//        RequestManager.handleReqest()
     }
 
 

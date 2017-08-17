@@ -3,6 +3,7 @@ package com.gmail.alex60070.request;
 import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.Keyboards;
 
+import com.gmail.alex60070.util.dialog.Dialog;
 import com.gmail.alex60070.util.message.Messages;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -10,7 +11,7 @@ import org.telegram.telegrambots.api.objects.Update;
 /**
  * Created by alex60070 on 17.08.17.
  */
-public class AddSongDialog extends com.gmail.alex60070.request.Dialog {
+public class AddSongDialog extends Dialog {
     public AddSongDialog(Long chatId) {
         super(chatId);
     }

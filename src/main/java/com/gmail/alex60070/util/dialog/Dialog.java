@@ -1,4 +1,4 @@
-package com.gmail.alex60070.request;
+package com.gmail.alex60070.util.dialog;
 
 import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.util.message.Messages;
@@ -48,7 +48,7 @@ public abstract class Dialog {
             // TODO: 17.08.17 Create own exception
             throw new RuntimeException("Dialog is already started");
     }
-    abstract void startDialog(Bot bot, Update update);
+    protected abstract void startDialog(Bot bot, Update update);
 
     public final void join(Bot bot,Update update){
         Message message = Messages.retrieveMessage(update);
@@ -56,7 +56,7 @@ public abstract class Dialog {
         joinDialog(bot, update); // handles certain dialog
     }
 
-    abstract void joinDialog(Bot bot, Update update);
+    protected abstract void joinDialog(Bot bot, Update update);
 
     @Override
     public boolean equals(Object o) {

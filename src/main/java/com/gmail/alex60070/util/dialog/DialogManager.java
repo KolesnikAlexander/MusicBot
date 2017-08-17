@@ -1,4 +1,6 @@
-package com.gmail.alex60070.request;
+package com.gmail.alex60070.util.dialog;
+
+import com.gmail.alex60070.util.dialog.Dialog;
 
 import java.util.LinkedList;
 import java.util.List;
