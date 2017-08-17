@@ -2,26 +2,36 @@ package com.gmail.alex60070.request;
 
 import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.Keyboards;
-import com.gmail.alex60070.session.Session;
-import com.gmail.alex60070.session.SessionManager;
+
 import com.gmail.alex60070.util.message.Messages;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 
 /**
- * Created by alex60070 on 16.08.17.
+ * Created by alex60070 on 17.08.17.
  */
-public class AddSongSession {
+public class AddSongDialog extends com.gmail.alex60070.request.Dialog {
+    public AddSongDialog(Long chatId) {
+        super(chatId);
+    }
 
-    //Button initiated
+    @Override
+    public void startDialog(Bot bot, Update update) {
+        addSongClick(bot, update);
+        setAction("inputSongName");
+    }
+
+    @Override
+    public void joinDialog(Bot bot, Update update) {
+        if (getAction().equals("inputSongName")){
+            inputSongName(bot, update);
+            setAction("sendSongPhoto");
+        }
+    }
+
     public static void addSongClick(Bot bot, Update update) {
         String text = "Добавить песню\n" +
                 "Введите название песни:";
-        Session session = SessionManager.createSesion(update.getCallbackQuery()//!!!!
-                .getMessage()
-                .getChatId());
-        session.setRequest("add_song");
-
         Messages.editCurrentMessage(bot, update, text, null);
 //        try {
 //            bot.deleteMessage(new DeleteMessage().setMessageId(123));
@@ -30,7 +40,7 @@ public class AddSongSession {
 //        }
     }
     //Message initiated
-    public static void nameIsSent(Bot bot, Update update, Session session) {
+    public static void inputSongName(Bot bot, Update update) {
         //if (cancellButtonPressed())
         if (!nameIsSentValidate(bot, update)){
             return;
@@ -39,6 +49,7 @@ public class AddSongSession {
                 "Пришлите фото с текстом:";
         Messages.sendKeyboardMessage(bot, update, text, Keyboards.backKeyKeyboard("menu"));
     }
+
     private static boolean nameIsSentValidate(Bot bot, Update update) {
         Message message = update.getMessage();
         if (message == null || !message.hasText() || !textIsValid(message.getText())) {
@@ -55,4 +66,6 @@ public class AddSongSession {
         // TODO: 16.08.17 Create validation pattern
         return true;
     }
+
+
 }

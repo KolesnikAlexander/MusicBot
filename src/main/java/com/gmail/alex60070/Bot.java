@@ -1,9 +1,10 @@
 package com.gmail.alex60070;
 
-import com.gmail.alex60070.request.AddSongSession;
-import com.gmail.alex60070.session.Session;
-import com.gmail.alex60070.session.SessionManager;
+import com.gmail.alex60070.request.AddSongDialog;
+import com.gmail.alex60070.request.Dialog;
+import com.gmail.alex60070.request.DialogManager;
 import com.gmail.alex60070.util.Logger;
+import com.gmail.alex60070.util.message.Messages;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -33,24 +34,12 @@ public class Bot extends TelegramLongPollingBot{
 
     }
 
-    private void processSession(Update update, Session session) throws Exception {
-        String request = session.getRequest();
-
-        if (request == null){
-            // TODO: 16.08.17 Create own exception
-            throw new Exception("Session request is null");
-        }
-        else if (request.equals("add_song")){
-            AddSongSession.nameIsSent(this, update, session);
-        }
-    }
-
     private void processMessage(Update update) throws Exception {
         Message message = update.getMessage();
 
-        if (SessionManager.sessionExists(message.getChatId())){
-            Session session = SessionManager.getSession(message.getChatId());
-            processSession(update, session);
+        if (DialogManager.dialogExists(message.getChatId())){
+            Dialog dialog = DialogManager.getDialog(message.getChatId());
+            dialog.join(this, update);
         }
 
         else if(isRequest(message, "/start"))
@@ -77,7 +66,10 @@ public class Bot extends TelegramLongPollingBot{
         else if (filteredData.equals("menu"))
             RequestHandler.menuBack(this, update);
         else if (filteredData.equals("add_song"))
-            AddSongSession.addSongClick(this, update);
+        {
+            Dialog dialog = new AddSongDialog(Messages.retrieveMessage(update).getChatId());
+            dialog.start(this, update);
+        }
     }
 
 

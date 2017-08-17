@@ -69,7 +69,7 @@ public class Messages {
      * @param update
      * @return
      */
-    private static Message retrieveMessage(Update update){
+    public static Message retrieveMessage(Update update){
         if(update.hasCallbackQuery())
             return update.getCallbackQuery().getMessage();
         else
