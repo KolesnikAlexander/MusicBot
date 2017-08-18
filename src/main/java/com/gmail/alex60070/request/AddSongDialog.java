@@ -2,7 +2,9 @@ package com.gmail.alex60070.request;
 
 import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.Keyboards;
+import com.gmail.alex60070.util.dialog.AbstractAction;
 import com.gmail.alex60070.util.dialog.AbstractDialog;
+import com.gmail.alex60070.util.dialog.ActionAnnotations;
 import com.gmail.alex60070.util.dialog.DialogManager;
 import com.gmail.alex60070.util.message.Messages;
 import org.telegram.telegrambots.api.objects.Message;
@@ -29,6 +31,11 @@ public class AddSongDialog extends AbstractDialog {
             inputSongName(bot, update);
             setAction("sendSongPhoto");
         }
+    }
+
+    @Override
+    protected void getActions(Bot bot, Update update) {
+
     }
 
     public static void addSongClick(Bot bot, Update update) {
