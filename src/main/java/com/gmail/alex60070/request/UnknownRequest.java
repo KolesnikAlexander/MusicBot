@@ -17,7 +17,7 @@ public class UnknownRequest extends RequestAbs {
 
     @Override
     protected void handleRequest(Bot bot, Update update) {
-        Messages.sendKeyboardMessage(bot, update,"Используйте клавиши", null);
+        Messages.sendKeyboardMessage(bot, update,"Неизвестное действие", null);
         Messages.sendKeyboardMessage(bot, update,"Меню", Keyboards.menuKeyboard());
     }
 }

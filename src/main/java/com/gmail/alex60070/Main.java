@@ -1,9 +1,7 @@
 package com.gmail.alex60070;
 
-import com.gmail.alex60070.request.callback.AddSongRequest;
-import com.gmail.alex60070.request.callback.ListRequest;
-import com.gmail.alex60070.request.callback.MenuRequest;
-import com.gmail.alex60070.request.callback.OptionsRequest;
+import com.gmail.alex60070.request.UnknownRequest;
+import com.gmail.alex60070.request.callback.*;
 import com.gmail.alex60070.request.slash.HelloRequest;
 import com.gmail.alex60070.request.slash.StartRequest;
 import com.gmail.alex60070.util.Logger;
@@ -37,17 +35,21 @@ public class Main
             e.printStackTrace();
         }
 
-        commandsRequestManager = new RequestManager();
+        dialogManager = new DialogManager();
+        commandsRequestManager = new RequestManager(dialogManager);
+        requestManager = new RequestManager(dialogManager);
+
         commandsRequestManager.add(new HelloRequest());
         commandsRequestManager.add(new StartRequest());
+        commandsRequestManager.add(new CancelRequest());
 
-        dialogManager = new DialogManager();
+        // TODO: 19.08.17 No need in dialog manager here
 
-        requestManager = new RequestManager();
         requestManager.add(new ListRequest());
         requestManager.add(new MenuRequest());
         requestManager.add(new OptionsRequest());
         requestManager.add(new AddSongRequest());
+        requestManager.add(new UnknownRequest());
 
         System.out.println("Bot started");
     }

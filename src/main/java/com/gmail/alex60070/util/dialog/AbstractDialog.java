@@ -4,6 +4,8 @@ import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.util.message.Messages;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,12 +17,25 @@ public abstract class AbstractDialog {
     private Long chatId;
     private String action; //action that is awaited
     private List<Integer> messagesId; // messages in dialog to ve deleted sequentially
+    private DialogManager manager;
 
     public AbstractDialog(Long chatId, DialogManager manager) {
         this.chatId = chatId;
         this.action = "start";
         messagesId = new LinkedList<>();
+        this.manager = manager;
         manager.add(this);
+    }
+
+    protected abstract void startDialog(Bot bot, Update update);
+
+    public final void start(Bot bot, Update update){
+        if (action.equals("start")){
+            startDialog(bot, update);
+        }
+        else
+            // TODO: 17.08.17 Create own exception
+            throw new RuntimeException("AbstractDialog is already started");
     }
 
     public final Long getChatId() {
@@ -39,34 +54,70 @@ public abstract class AbstractDialog {
         this.action = action;
     }
 
-    public final void start(Bot bot, Update update){
-        if (action.equals("start")){
-            startDialog(bot, update);
-        }
-        else
-            // TODO: 17.08.17 Create own exception
-            throw new RuntimeException("AbstractDialog is already started");
-    }
-
-
     public final void join(Bot bot, Update update){
         Message message = Messages.retrieveMessage(update);
         messagesId.add(message.getMessageId());
-        // TODO: 19.08.17 ValidateAction -> Handle/Error
-
-        joinDialog(bot, update); // handles certain dialog
-        joinAction();
+        joinAction(bot, update); // handling the action
     }
 
-    protected void joinAction(){
+    protected void joinAction(Bot bot, Update update){
+        try {
+            if (validateAction(bot, update))
+                handleAction(bot, update);
+            else
+                handleInvalid(bot, update);
+
+        } catch (InvocationTargetException e) {
+            // TODO: 19.08.17 Make output to log
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+    private boolean validateAction(Bot bot, Update update) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         Class cl = this.getClass();
-        Method[] method = null;
+        Method[] method = cl.getMethods();
         for(Method md: method){
-            ActionAnnotations.Validator annotation = md.getAnnotation(ActionAnnotations.Validator.class);
-            if((annotation != null)) {
-                // TODO: 19.08.17  Finish finally that stuff
+            Action.Validator annotation = md.getAnnotation(Action.Validator.class);
+            if((annotation != null) &&
+                    this.getAction().equals(annotation.action())) {
+                //returns true if validation is successful
+                return (boolean) md.invoke(this,bot, update);
             }
         }
+        return false;
+    }
+    private boolean handleAction(Bot bot, Update update) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+        Class cl = this.getClass();
+        Method[] method = cl.getMethods();
+        for(Method md: method){
+            Action.Handler annotation = md.getAnnotation(Action.Handler.class);
+            if((annotation != null) &&
+                    this.getAction().equals(annotation.action())) {
+                md.invoke(this, bot, update);
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean handleInvalid(Bot bot, Update update) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+        Class cl = this.getClass();
+        Method[] method = cl.getMethods();
+        for(Method md: method){
+            Action.InvalidHandler annotation = md.getAnnotation(Action.InvalidHandler.class);
+            if((annotation != null) &&
+                    this.getAction().equals(annotation.action())) {
+                md.invoke(this, bot, update);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void destroy(){
+        manager.deleteDialog(this);
     }
 
     @Override
@@ -78,12 +129,6 @@ public abstract class AbstractDialog {
 
         return chatId.equals(abstractDialog.chatId);
     }
-
-    protected abstract void startDialog(Bot bot, Update update);
-
-    protected abstract void joinDialog(Bot bot, Update update);
-
-    protected abstract void getActions(Bot bot, Update update);
 
     @Override
     public int hashCode() {

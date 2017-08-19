@@ -2,73 +2,128 @@ package com.gmail.alex60070.request;
 
 import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.Keyboards;
-import com.gmail.alex60070.util.dialog.AbstractAction;
 import com.gmail.alex60070.util.dialog.AbstractDialog;
-import com.gmail.alex60070.util.dialog.ActionAnnotations;
+import com.gmail.alex60070.util.dialog.Action;
 import com.gmail.alex60070.util.dialog.DialogManager;
 import com.gmail.alex60070.util.message.Messages;
+import com.gmail.alex60070.util.photo.Photos;
+import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.api.objects.PhotoSize;
 import org.telegram.telegrambots.api.objects.Update;
 
-/**
- * Created by alex60070 on 17.08.17.
- */
 public class AddSongDialog extends AbstractDialog {
+
+    private static final String INPUT_SONG_NAME = "inputSongName";
+    private static final String INPUT_PHOTO = "inputPhoto";
+    private static final String SUBMIT = "submit";
+
+    String name;
+    PhotoSize photo;
 
     public AddSongDialog(Long chatId, DialogManager manager) {
         super(chatId, manager);
     }
 
+    /*
+        When the dialog starts, the update is always valid as long as
+        dialog is started from the request handler that already
+        verified the update.
+    */
     @Override
     public void startDialog(Bot bot, Update update) {
         addSongClick(bot, update);
-        setAction("inputSongName");
+        setAction(INPUT_SONG_NAME);
     }
 
-    @Override
-    public void joinDialog(Bot bot, Update update) {
-        if (getAction().equals("inputSongName")){
-            inputSongName(bot, update);
-            setAction("sendSongPhoto");
-        }
-    }
-
-    @Override
-    protected void getActions(Bot bot, Update update) {
-
-    }
-
-    public static void addSongClick(Bot bot, Update update) {
+    public void addSongClick(Bot bot, Update update) {
         String text = "Добавить песню\n" +
                 "Введите название песни:";
-        Messages.editCurrentMessage(bot, update, text, null);
+        Messages.editCurrentMessage(bot, update, text, Keyboards.cancelKeyBoard());
     }
-    //Message initiated
-    public static void inputSongName(Bot bot, Update update) {
-        //if (cancellButtonPressed())
-        if (!nameIsSentValidate(bot, update)){
-            return;
-        }
-        String text = "Название: \""+update.getMessage().getText() +"\"\n"+
-                "Пришлите фото с текстом:";
-        Messages.sendKeyboardMessage(bot, update, text, Keyboards.backKeyKeyboard("menu"));
-    }
-
-    private static boolean nameIsSentValidate(Bot bot, Update update) {
+// INPUT SONG NAME
+    @Action.Validator(action = INPUT_SONG_NAME)
+    public boolean inputSongNameValidate(Bot bot, Update update) {
         Message message = update.getMessage();
-        if (message == null || !message.hasText() || !textIsValid(message.getText())) {
-            String text = "Пришлите название песни. Запрещенный символ: \'/\'.";
-            Messages.sendKeyboardMessage(bot, update, text, null);//Keyboards.backKeyKeyboard("options"));
+        if (message == null || !message.hasText() || !textIsValid(message.getText()))
             return false;
-        }
-        else {
+        else
             return true;
-        }
     }
 
-    private static boolean textIsValid(String text) {
+    @Action.Handler(action = INPUT_SONG_NAME)
+    public void inputSongName(Bot bot, Update update) {
+        this.name = update.getMessage().getText();
+        String text = "Название: \""+name+"\"\n"+
+                "Пришлите фото с текстом:";
+        Messages.sendKeyboardMessage(bot, update, text, Keyboards.cancelKeyBoard());//Keyboards.backKeyKeyboard("menu"));
+        setAction(INPUT_PHOTO);
+    }
+
+    @Action.InvalidHandler(action = INPUT_SONG_NAME)
+    public void nameIsSentInvalid(Bot bot, Update update) {
+        String text = "Пришлите название песни. Запрещенный символ: \'/\'.";
+        Messages.sendKeyboardMessage(bot, update, text, Keyboards.cancelKeyBoard());//Keyboards.backKeyKeyboard("options"));
+
+    }
+
+    private boolean textIsValid(String text) {
         // TODO: 16.08.17 Create validation pattern
         return true;
+    }
+
+// INPUT PHOTO
+    @Action.Validator(action = INPUT_PHOTO)
+    public boolean inputPhotoValidator(Bot bot, Update update) {
+        Message message = Messages.retrieveMessage(update);
+        if (message == null || !message.hasPhoto())
+            return false;
+        else
+            return true;
+    }
+
+    @Action.Handler(action = INPUT_PHOTO)
+    public void inputPhoto(Bot bot, Update update) {
+        Message message = Messages.retrieveMessage(update);
+
+        photo = Photos.getMax(message.getPhoto());
+        String text = "Сохранить песню?";
+        Messages.sendKeyboardMessage(bot, update, text, Keyboards.submitionKeyboard());//Keyboards.backKeyKeyboard("menu"));
+        setAction(SUBMIT);
+    }
+
+    @Action.InvalidHandler(action = INPUT_PHOTO)
+    public void inputPhotoInvalid(Bot bot, Update update) {
+        String text = "Пришлите фото";
+        Messages.sendKeyboardMessage(bot, update, text, Keyboards.cancelKeyBoard());//Keyboards.backKeyKeyboard("options"));
+
+    }
+//SUBMIT
+    @Action.Validator(action = SUBMIT)
+    public boolean submitValidator(Bot bot, Update update) {
+        CallbackQuery callback = update.getCallbackQuery();
+        if (callback == null)
+            return false;
+        else if (!com.gmail.alex60070.util.CallbackQuery
+                .filterCallback(callback.getData())
+                .equals("ok"))
+            return false;
+        else
+            return true;
+    }
+
+    @Action.Handler(action = SUBMIT)
+    public void submit(Bot bot, Update update) {
+        String text = "Песня сохранена";
+        Messages.sendKeyboardMessage(bot, update, text, null);
+        Messages.sendKeyboardMessage(bot, update, "Меню", Keyboards.menuKeyboard());
+        this.destroy();
+    }
+
+    @Action.InvalidHandler(action = SUBMIT)
+    public void submitInvalid(Bot bot, Update update) {
+        String text = "Сохранить песню?";
+        Messages.sendKeyboardMessage(bot, update, text, Keyboards.submitionKeyboard());
     }
 
 

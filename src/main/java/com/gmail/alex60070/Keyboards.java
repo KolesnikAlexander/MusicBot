@@ -84,4 +84,35 @@ public class Keyboards {
         menuBackKeyKeyboard.setKeyboard(rowsInline);
         return menuBackKeyKeyboard;
     }
+
+    public static InlineKeyboardMarkup cancelKeyBoard() {
+        InlineKeyboardMarkup menuBackKeyKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+        String data = putCallbackDataSuffix("cancel");
+        rowInline.add(new InlineKeyboardButton()
+                .setText("\t\t\t\t\tx Отмена\t\t\t\t\t").setCallbackData(data));
+
+        rowsInline.add(rowInline);
+        menuBackKeyKeyboard.setKeyboard(rowsInline);
+        return menuBackKeyKeyboard;
+    }
+    public static InlineKeyboardMarkup submitionKeyboard() {
+        InlineKeyboardMarkup menuBackKeyKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+        String data = putCallbackDataSuffix("cancel");
+        rowInline.add(new InlineKeyboardButton()
+                .setText("\t\t\t\t\tОтмена\t\t\t\t\t").setCallbackData(data));
+
+        data = putCallbackDataSuffix("ok");
+        rowInline.add(new InlineKeyboardButton()
+                .setText("\t\t\t\t\tOK\t\t\t\t\t").setCallbackData(data));
+
+        rowsInline.add(rowInline);
+        menuBackKeyKeyboard.setKeyboard(rowsInline);
+        return menuBackKeyKeyboard;
+    }
 }

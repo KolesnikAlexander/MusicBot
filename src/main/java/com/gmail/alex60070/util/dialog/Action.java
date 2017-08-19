@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Created by alex60070
  */
-public class ActionAnnotations {
+public class Action {
 
     @Target(value= ElementType.METHOD)
     @Retention(value= RetentionPolicy.RUNTIME)

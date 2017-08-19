@@ -21,7 +21,7 @@ public class Bot extends TelegramLongPollingBot{
             else if(Main.requestManager.processRequest(this, update))
                 return;
 
-            new UnknownRequest().handle(this, update);
+           // new UnknownRequest().handle(this, update);
         }
         catch (Exception e){
             Logger.log(e.getMessage());

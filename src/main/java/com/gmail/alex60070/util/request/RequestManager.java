@@ -1,6 +1,7 @@
 package com.gmail.alex60070.util.request;
 
 import com.gmail.alex60070.Bot;
+import com.gmail.alex60070.util.dialog.DialogManager;
 import org.telegram.telegrambots.api.objects.Update;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,8 +11,19 @@ import java.util.List;
  */
 public class RequestManager {
     private  List<RequestAbs> requests = new LinkedList<>();
+    private DialogManager dialogManager;
 
-    public  void add(RequestAbs reqest){
+    public RequestManager(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
+    }
+
+    public DialogManager getDialogManager() {
+        return dialogManager;
+    }
+
+    public void add(RequestAbs reqest)
+    {
+        reqest.setManager(this);
         requests.add(reqest);
     }
 
