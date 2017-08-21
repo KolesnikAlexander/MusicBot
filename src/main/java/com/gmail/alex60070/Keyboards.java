@@ -1,8 +1,10 @@
 package com.gmail.alex60070;
 
+import com.gmail.alex60070.entity.Song;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -115,4 +117,29 @@ public class Keyboards {
         menuBackKeyKeyboard.setKeyboard(rowsInline);
         return menuBackKeyKeyboard;
     }
+    public static InlineKeyboardMarkup songsKeyboard(LinkedList<Song> songs) {
+        InlineKeyboardMarkup menuBackKeyKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInline;
+        String data;
+        for (Song song : songs) {
+            rowInline = new ArrayList<>(1);
+            data = putCallbackDataSuffix("song/" + song.getName());
+            rowInline.add(new InlineKeyboardButton()
+                    .setText(song.getName())
+                    .setCallbackData(data));
+            rowsInline.add(rowInline);
+
+        }
+        rowInline = new ArrayList<>(1);
+        data = putCallbackDataSuffix("menu");
+        rowInline.add(new InlineKeyboardButton()
+                .setText("<< Назад")
+                .setCallbackData(data));
+        rowsInline.add(rowInline);
+
+        menuBackKeyKeyboard.setKeyboard(rowsInline);
+        return menuBackKeyKeyboard;
+    }
+
 }

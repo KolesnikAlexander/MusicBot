@@ -14,9 +14,6 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class Main
 {
-    public static RequestManager commandsRequestManager;
-    public static DialogManager dialogManager;
-    public static RequestManager requestManager;
 
     public static void main( String[] args )
     {
@@ -35,21 +32,21 @@ public class Main
             e.printStackTrace();
         }
 
-        dialogManager = new DialogManager();
-        commandsRequestManager = new RequestManager(dialogManager);
-        requestManager = new RequestManager(dialogManager);
-
-        commandsRequestManager.add(new HelloRequest());
-        commandsRequestManager.add(new StartRequest());
-        commandsRequestManager.add(new CancelRequest());
-
-        // TODO: 19.08.17 No need in dialog manager here
-
-        requestManager.add(new ListRequest());
-        requestManager.add(new MenuRequest());
-        requestManager.add(new OptionsRequest());
-        requestManager.add(new AddSongRequest());
-        requestManager.add(new UnknownRequest());
+//        Bot.dialogManager = new DialogManager();
+//        Bot.commandsRequestManager = new RequestManager(Bot.dialogManager);
+//        Bot.requestManager = new RequestManager(Bot.dialogManager);
+//
+//        Bot.commandsRequestManager.add(new HelloRequest());
+//        Bot.commandsRequestManager.add(new StartRequest());
+//        Bot.commandsRequestManager.add(new CancelRequest());
+//
+//        // TODO: 19.08.17 No need in dialog manager here
+//
+//        Bot.requestManager.add(new ListRequest());
+//        Bot.requestManager.add(new MenuRequest());
+//        Bot.requestManager.add(new OptionsRequest());
+//        Bot.requestManager.add(new AddSongRequest());
+//        Bot.requestManager.add(new UnknownRequest());
 
         System.out.println("Bot started");
     }

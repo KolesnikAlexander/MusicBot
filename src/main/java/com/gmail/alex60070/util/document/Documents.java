@@ -38,6 +38,25 @@ public class Documents {
         }
         return inputFileStream;
     }
+    public static InputStream downloadDocument(Bot bot, String fileId){
+        GetFile getFile = new GetFile();
+        getFile.setFileId(fileId);
+        File file = null;
+        try {
+            file = bot.execute(getFile);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+        String filePath = file.getFilePath();
+        InputStream inputFileStream = null;
+        try {
+            // TODO: 31.07.17  Throw exception
+            inputFileStream = downloadUsingStream(bot.getBotToken(),filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return inputFileStream;
+    }
     private static InputStream downloadUsingStream(String botToken, String filePath) throws IOException {
         String path = File.getFileUrl(botToken, filePath);
         URL url = new URL(path);

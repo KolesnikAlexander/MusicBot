@@ -1,7 +1,6 @@
 package com.gmail.alex60070.request.callback;
 
 import com.gmail.alex60070.Bot;
-import com.gmail.alex60070.Main;
 import com.gmail.alex60070.request.AddSongDialog;
 import com.gmail.alex60070.util.dialog.AbstractDialog;
 import com.gmail.alex60070.util.message.Messages;
@@ -14,7 +13,7 @@ import org.telegram.telegrambots.api.objects.Update;
 public class AddSongRequest extends CallbackRequestAbs {
     @Override
     protected void handleRequest(Bot bot, Update update) {
-        AbstractDialog abstractDialog = new AddSongDialog(Messages.retrieveMessage(update).getChatId(), Main.dialogManager);
+        AbstractDialog abstractDialog = new AddSongDialog(Messages.retrieveMessage(update).getChatId(), Bot.dialogManager);
         abstractDialog.start(bot, update);
     }
 

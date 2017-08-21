@@ -2,6 +2,10 @@ package com.gmail.alex60070.request;
 
 import com.gmail.alex60070.Bot;
 import com.gmail.alex60070.Keyboards;
+import com.gmail.alex60070.dao.DaoSongResponse;
+import com.gmail.alex60070.dao.SongDao;
+import com.gmail.alex60070.entity.Photo;
+import com.gmail.alex60070.entity.Song;
 import com.gmail.alex60070.util.dialog.AbstractDialog;
 import com.gmail.alex60070.util.dialog.Action;
 import com.gmail.alex60070.util.dialog.DialogManager;
@@ -85,8 +89,7 @@ public class AddSongDialog extends AbstractDialog {
     @Action.Handler(action = INPUT_PHOTO)
     public void inputPhoto(Bot bot, Update update) {
         Message message = Messages.retrieveMessage(update);
-
-        photo = Photos.getMax(message.getPhoto());
+        this.photo = Photos.getMax(message.getPhoto());
         String text = "Сохранить песню?";
         Messages.sendKeyboardMessage(bot, update, text, Keyboards.submitionKeyboard());//Keyboards.backKeyKeyboard("menu"));
         setAction(SUBMIT);
@@ -114,6 +117,11 @@ public class AddSongDialog extends AbstractDialog {
 
     @Action.Handler(action = SUBMIT)
     public void submit(Bot bot, Update update) {
+        Photo.addPhotoToStorage(bot, this.name, photo.getFileId());
+
+        DaoSongResponse daoSongResponse = new SongDao()
+                .addSong(bot, new Song(this.name, this.photo));
+
         String text = "Песня сохранена";
         Messages.sendKeyboardMessage(bot, update, text, null);
         Messages.sendKeyboardMessage(bot, update, "Меню", Keyboards.menuKeyboard());

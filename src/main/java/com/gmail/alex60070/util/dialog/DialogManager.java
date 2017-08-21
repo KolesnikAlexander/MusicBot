@@ -14,7 +14,7 @@ import java.util.List;
 public class DialogManager {
         private  List<AbstractDialog> abstractDialogs = new LinkedList<>();
 
-        public  void add(AbstractDialog abstractDialog){
+        public void add(AbstractDialog abstractDialog){
             abstractDialogs.add(abstractDialog);
         }
 
