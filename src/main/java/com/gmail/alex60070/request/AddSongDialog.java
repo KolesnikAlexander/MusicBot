@@ -117,13 +117,18 @@ public class AddSongDialog extends AbstractDialog {
 
     @Action.Handler(action = SUBMIT)
     public void submit(Bot bot, Update update) {
-        Photo.addPhotoToStorage(bot, this.name, photo.getFileId());
-
+       // Photo.addPhotoToStorage(bot, this.name, photo.getFileId());
+        Song song = new Song(this.name, this.photo);
         DaoSongResponse daoSongResponse = new SongDao()
-                .addSong(bot, new Song(this.name, this.photo));
+                .addSong(bot, song);
 
-        String text = "Песня сохранена";
-        Messages.sendKeyboardMessage(bot, update, text, null);
+        String text;
+        if (daoSongResponse.isSuccessful())
+            text = "Песня \""+ this.name +"\" сохранена";
+        else
+            text = daoSongResponse.getMessage();
+
+        Messages.editCurrentMessage(bot, update, text, null);
         Messages.sendKeyboardMessage(bot, update, "Меню", Keyboards.menuKeyboard());
         this.destroy();
     }

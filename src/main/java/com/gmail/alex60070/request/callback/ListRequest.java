@@ -20,8 +20,6 @@ public class ListRequest extends CallbackRequestAbs {
         //Messages.editCurrentMessage(bot, update, ", Keyboards.backKeyKeyboard("menu"));
         LinkedList<Song> songsList = new SongDao().getSongsList();
         Messages.editCurrentMessage(bot, update,"Список:", Keyboards.songsKeyboard(songsList) );
-        Photos.sendPhoto(bot, update, "ТЕСТ", "test.jpg");
-
     }
 
     @Override

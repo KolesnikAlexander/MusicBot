@@ -17,6 +17,10 @@ public class Song {
         this.photo = photoSize;
        // this.photoPath = path(photoSize);
     }
+    public Song(String name) {
+        this.name = name;
+        // this.photoPath = path(photoSize);
+    }
 
     public Song(String name, String photoPath) {
         this.name = name;
@@ -58,7 +62,7 @@ public class Song {
 
         Song song = (Song) o;
 
-        return name != null ? name.equals(song.name) : song.name == null;
+        return this.getName().equals(song.getName());
     }
 
     @Override

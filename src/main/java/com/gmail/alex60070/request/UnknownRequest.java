@@ -17,6 +17,10 @@ public class UnknownRequest extends RequestAbs {
 
     @Override
     protected void handleRequest(Bot bot, Update update) {
+        if (update.hasCallbackQuery()){
+            Messages.editCurrentMessage(bot, update, "Меню", Keyboards.menuKeyboard());
+            return;
+        }
         Messages.sendKeyboardMessage(bot, update,"Неизвестное действие", null);
         Messages.sendKeyboardMessage(bot, update,"Меню", Keyboards.menuKeyboard());
     }

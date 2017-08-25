@@ -13,7 +13,7 @@ public class CancelRequest extends CallbackRequestAbs {
 
     @Override
     protected void handleRequest(Bot bot, Update update) {
-        Messages.sendKeyboardMessage(bot, update, "Меню", Keyboards.menuKeyboard());
+        Messages.editCurrentMessage(bot, update, "Меню", Keyboards.menuKeyboard());
     }
 
     @Override

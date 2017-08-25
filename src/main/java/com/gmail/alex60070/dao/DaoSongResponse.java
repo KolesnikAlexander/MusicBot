@@ -13,6 +13,7 @@ public class DaoSongResponse {
     public DaoSongResponse(boolean successful, Song song, String message) {
         this.successful = successful;
         this.message = message;
+        this.song = song;
     }
 
     public boolean isSuccessful() {
@@ -21,5 +22,9 @@ public class DaoSongResponse {
 
     public String getMessage() {
         return message;
+    }
+
+    public Song getSong() {
+        return song;
     }
 }

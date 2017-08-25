@@ -15,7 +15,7 @@ public abstract class CallbackRequestAbs extends RequestAbs {
         if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
             String filteredData = filterCallback(callbackData);
-            if (filteredData.equals(getRequestCallbackData()))
+            if (filteredData.startsWith(getRequestCallbackData())) //!!!!!!!
                 return true;
             else
                 return false;

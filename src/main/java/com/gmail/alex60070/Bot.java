@@ -55,7 +55,10 @@ public class Bot extends TelegramLongPollingBot{
        requestManager.add(new MenuRequest());
        requestManager.add(new OptionsRequest());
        requestManager.add(new AddSongRequest());
+       requestManager.add(new SongRequest());
+
        requestManager.add(new UnknownRequest());
+
     }
 
     private String genDocName(String fileName) {
